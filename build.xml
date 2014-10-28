@@ -36,6 +36,7 @@
   <!-- Creates Javadoc -->
   <target name="doc">
     <mkdir dir="${doc.dir}"/>
+    <!--  packagenames="src" -->
     <javadoc destdir="${doc.dir}" packagenames="src" sourcepath="${src.dir}">
       <!-- Define which files / directory should get included, we include all -->
       <fileset dir="${src.dir}">

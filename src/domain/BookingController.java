@@ -1,3 +1,4 @@
+package domain;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.io.IOException;
@@ -80,8 +81,11 @@ class Settings {
 		maxBooking = 5;
 	}
 }
-
-class BookingController {
+/**
+	 * Load the room data from the database file.
+	 * Schema: String roomID (primary key), String roomType, String roomLocation
+	 */
+public class BookingController {
 	private static BookingController settings = null;
 	public List<BookingSlot> bookingSlots;
 
