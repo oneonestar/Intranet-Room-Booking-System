@@ -1,0 +1,16 @@
+PQ100;Computer labs;PQ Floor 1
+PQ101;Computer labs;PQ Floor 1
+PQ102;Computer labs;PQ Floor 1
+PQ103;Computer labs;PQ Floor 1
+PQ200;Classrooms;PQ Floor 2
+PQ201;Classrooms;PQ Floor 2
+PQ202;Classrooms;PQ Floor 2
+PQ203;Classrooms;PQ Floor 2
+PQ300;Lecture rooms;PQ Floor 3
+PQ301;Lecture rooms;PQ Floor 3
+PQ302;Lecture rooms;PQ Floor 3
+PQ303;Lecture rooms;PQ Floor 3
+PQ400;Meeting rooms;PQ Floor 4
+PQ401;Meeting rooms;PQ Floor 4
+PQ402;Meeting rooms;PQ Floor 4
+PQ403;Meeting rooms;PQ Floor 4
