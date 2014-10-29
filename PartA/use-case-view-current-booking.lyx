@@ -1,0 +1,225 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Case - View the current booking information
+\end_layout
+
+\begin_layout Itemize
+Use case: View the current booking information
+\end_layout
+
+\begin_layout Itemize
+Level: User goal
+\end_layout
+
+\begin_layout Itemize
+Primary actor: Staff who is currently using the system
+\end_layout
+
+\begin_layout Itemize
+Scope: Display the current booking information for the current system user.
+\end_layout
+
+\begin_layout Itemize
+Stakeholders:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Staff: Wants to view his current booking records, total number of bookings
+ and the maximum booking count.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Preconditions:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The staff should be an authorized user (logged-in).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Success Guarantee:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The system will provide the total number of bookings of the current staff.
+\end_layout
+
+\begin_layout Itemize
+The system will list out the current booking records including the booking
+ booking reference number, the booking date & time, room number and room
+ location for the staff.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Main Success Scenario:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+After the successful 
+\color red
+authentication and authorization process
+\color inherit
+, the system will display the 
+\color red
+current user information
+\color inherit
+.
+\end_layout
+
+\begin_layout Enumerate
+The 
+\color red
+system
+\color inherit
+ will show the 
+\color red
+total number of bookings of the current staff
+\color inherit
+.
+\end_layout
+
+\begin_layout Enumerate
+The 
+\color red
+system
+\color inherit
+ will list out the 
+\color red
+current booking records
+\color inherit
+ including the 
+\color red
+booking reference number
+\color inherit
+, the 
+\color red
+booking date & time
+\color inherit
+, 
+\color red
+room number
+\color inherit
+ and 
+\color red
+room location
+\color inherit
+ for the 
+\color red
+staff
+\color inherit
+.
+\end_layout
+
+\begin_layout Enumerate
+This 
+\color red
+system
+\color inherit
+ will update automatically if the 
+\color red
+booking record
+\color inherit
+ changes (i.e.
+ 
+\color red
+new booking
+\color inherit
+ has been made).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Extensions:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+If the booking record displayed is not incorrect
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Multiple reasons could cause this to happen.
+ Such as an emergency maintenance occurred in the booked room and other
+ administrative reasons.
+\end_layout
+
+\begin_layout Enumerate
+Technical problems such as IO Errors could also cause the problem.
+\end_layout
+
+\begin_layout Enumerate
+The staff should contact the system administration staff for further enquiry.
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_body
+\end_document

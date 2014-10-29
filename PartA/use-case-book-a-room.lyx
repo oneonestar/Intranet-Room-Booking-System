@@ -1,0 +1,355 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans lmss
+\font_typewriter default
+\font_default_family sfdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Case - Book a room
+\end_layout
+
+\begin_layout Itemize
+Use case: Book a room
+\end_layout
+
+\begin_layout Itemize
+Level: User goal
+\end_layout
+
+\begin_layout Itemize
+Primary actor: Staff who is currently using the system
+\end_layout
+
+\begin_layout Itemize
+Scope: User books the room in the specific timeslot
+\end_layout
+
+\begin_layout Itemize
+Stakeholders:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Staff: Specify the room and the timeslot
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Preconditions:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The staff should be an authorized user (logged-in).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Success Guarantee:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The system will receive the booking request.
+ If the booking is successfully done, the system will record the booking
+ and others will not be able to book the timeslot again.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Main Success Scenario:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+
+\family roman
+\color red
+User
+\family default
+\color inherit
+ can view the available 
+\family roman
+\color red
+timeslot
+\family default
+\color inherit
+ for each 
+\family roman
+\color red
+room
+\family default
+\color inherit
+ that matches the 
+\family roman
+\color red
+search filter
+\family default
+\color inherit
+.
+\end_layout
+
+\begin_layout Enumerate
+
+\family roman
+\color red
+User
+\family default
+\color inherit
+ can select the 
+\family roman
+\color red
+room
+\family default
+\color inherit
+ and 
+\family roman
+\color red
+timeslot
+\family default
+\color inherit
+ from the available 
+\family roman
+\color red
+timeslot list
+\family default
+\color inherit
+.
+\end_layout
+
+\begin_layout Enumerate
+The 
+\family roman
+\color red
+system
+\family default
+\color inherit
+ should display the 
+\family roman
+\color red
+total number of selected new bookings
+\family default
+\color inherit
+ and 
+\family roman
+\color red
+the total number of bookings
+\family default
+\color inherit
+ (total number of selected new bookings + total number of current bookings).
+\end_layout
+
+\begin_layout Enumerate
+If the 
+\family roman
+\color red
+total number of bookings
+\family default
+\color inherit
+ is smaller or equal to 5, the 
+\family roman
+\color red
+user
+\family default
+\color inherit
+ will be able to book the room by clicking the 
+\family roman
+\color red
+<Book> button
+\family default
+\color inherit
+.
+\end_layout
+
+\begin_layout Enumerate
+
+\family roman
+\color red
+System
+\family default
+\color inherit
+ will create a 
+\family roman
+\color red
+book record
+\family default
+\color inherit
+.
+\end_layout
+
+\begin_layout Enumerate
+The 
+\family roman
+\color red
+booked room
+\family default
+\color inherit
+ at that 
+\family roman
+\color red
+particular timeslot
+\family default
+\color inherit
+ will not be available in the later search.
+\end_layout
+
+\begin_layout Enumerate
+The 
+\family roman
+\color red
+total number of bookings
+\family default
+\color inherit
+ and the 
+\family roman
+\color red
+booking records
+\family default
+\color inherit
+ will be updated accordingly.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Extensions:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+If the total number of bookings is greater than 5
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+The 
+\family roman
+\color red
+system
+\family default
+\color inherit
+ will reject the 
+\family roman
+\color red
+booking
+\family default
+\color inherit
+ and alert the 
+\family roman
+\color red
+user
+\family default
+\color inherit
+.
+\end_layout
+
+\begin_layout Enumerate
+The 
+\family roman
+\color red
+user
+\family default
+\color inherit
+ needs to remove some of the 
+\family roman
+\color red
+selections
+\family default
+\color inherit
+ to satisfy the 
+\family roman
+\color red
+booking limit
+\family default
+\color inherit
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+If the there is no 
+\family roman
+\color red
+available timeslot
+\family default
+\color inherit
+ on that 
+\family roman
+\color red
+date
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+The process could not continue.
+\end_layout
+
+\begin_layout Enumerate
+User should search for 
+\family roman
+\color red
+another date
+\family default
+\color inherit
+ for booking.
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_body
+\end_document

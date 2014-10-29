@@ -1,4 +1,3 @@
-package domain;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.io.IOException;
@@ -8,6 +7,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * 
+ */
 class BookingSlot {
 	public String bookingID;
 	public User user;
@@ -50,9 +52,18 @@ class Room {
 	}
 }
 
+/**
+ * Contain all the global settings (eg. the maximum booking
+ * count for each individual...).
+ * This class is a singleton class.
+ */
+//public final class Settings {
 class Settings {
 	private static Settings settings = null;
-
+	/**
+	 * This function provide the access to the singleton object.
+	 * @return the singleton object of the BookingController.
+	 */
 	public static synchronized Settings getInstance() {
 		if (settings  == null) {
 			settings = new Settings();
@@ -63,6 +74,9 @@ class Settings {
 	public final Calendar dayStartTime;
 	public final Calendar dayEndTime;
 	public final int maxBooking;
+	/**
+	 * All the global settings should be placed in here.
+	 */
 	public Settings() {
 		//0800
 		dayStartTime = Calendar.getInstance();
@@ -82,13 +96,16 @@ class Settings {
 	}
 }
 /**
-	 * Load the room data from the database file.
-	 * Schema: String roomID (primary key), String roomType, String roomLocation
-	 */
+ * The main controller to handle all the booking and querying.
+ * This class is a singleton class.
+ */
 public class BookingController {
 	private static BookingController settings = null;
-	public List<BookingSlot> bookingSlots;
-
+	
+	/**
+	 * This function provide the access to the singleton object.
+	 * @return the singleton object of the BookingController.
+	 */
 	public static synchronized BookingController getInstance() {
 		if (settings  == null) {
 			settings = new BookingController();
@@ -96,9 +113,16 @@ public class BookingController {
 		return settings;
 	}
 
+	private List<BookingSlot> bookingSlots;
 	private List<Room> rooms;
 	private List<User> users;
+	private Map<User, String> hashedPassword;
 	private int bookingCount;
+
+	/**
+	 * Constructor of the BookingController.
+	 * Responsible for the initialization of the private members.
+	 */
 	public BookingController() {
 		rooms = new ArrayList<Room>();
 		users = new ArrayList<User>();
@@ -233,7 +257,7 @@ public class BookingController {
 		return currentBookings;
 	}
 
-	public Room searchRoom(String roomID) {
+	private Room searchRoom(String roomID) {
 		for (Room room : rooms) {
 			if (room.roomID.equals(roomID))
 				return room;
@@ -241,7 +265,7 @@ public class BookingController {
 		return null;
 	}
 
-	public User searchUser(String username) {
+	private User searchUser(String username) {
 		for (User user : users) {
 			if (user.username.equals(username))
 				return user;
@@ -255,7 +279,6 @@ public class BookingController {
 	 * @param date search the timeslots in which date.
 	 * @return a list of slots which contains all the available timeslots in that date.
 	 */
-
 	public List<BookingSlot> queueAvailableSlot(String roomType, Calendar date) {
 		List<BookingSlot> availableSlot = new ArrayList<BookingSlot>();
 		date.set(Calendar.HOUR_OF_DAY, 0);

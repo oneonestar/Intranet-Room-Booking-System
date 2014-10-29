@@ -1,5 +1,3 @@
-package ui;
-
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
@@ -62,8 +60,11 @@ class UserLogin extends JFrame {
 
 				User u = BookingController.getInstance().authenticate(un, sb.toString());
 				if (u != null) {
-					dispose();
 					new MainFrame(u);
+					//reset login page for next user
+					uname.setText("");
+					pass.setText("");
+					u = null;
 				}
 			}
 		});
@@ -82,7 +83,7 @@ class UserLogin extends JFrame {
 		setLocationRelativeTo(null);
 	}
 
-	class MainFrame extends JFrame implements WindowFocusListener {
+	class MainFrame extends JDialog implements WindowFocusListener {
 		JMenuBar mbar;
 		User currentUser;
 		JTable table;
@@ -125,11 +126,12 @@ class UserLogin extends JFrame {
 			});
 			add(button);
 
-
+			setModal (true);
+			setModalityType (ModalityType.APPLICATION_MODAL);
 
 			setSize(800, 800);
 			setVisible(true);
-			setDefaultCloseOperation(EXIT_ON_CLOSE);
+			//setDefaultCloseOperation(EXIT_ON_CLOSE);
 		}
 		class MyTableModel extends AbstractTableModel {
 			private List<BookingSlot> slots;
@@ -213,7 +215,7 @@ class UserLogin extends JFrame {
 						new BookingFrameStep2(BookingFrame.this.currentUser, selectedDate, (String)BookingFrame.this.comboList.getSelectedItem());
 					} else
 						JOptionPane.showMessageDialog(null,
-						                              "Please select a valid date" + selectedDate.compareTo(today),
+						                              "Please select a valid date",
 						                              "Date Error",
 						                              JOptionPane.ERROR_MESSAGE);
 				}
@@ -221,7 +223,6 @@ class UserLogin extends JFrame {
 			add(button);
 
 			setModal (true);
-			setAlwaysOnTop (true);
 			setModalityType (ModalityType.APPLICATION_MODAL);
 
 			setVisible(true);
@@ -259,13 +260,13 @@ class UserLogin extends JFrame {
 			add(label_1_3);
 
 			JTable table = new JTable(myTableModel);
-			table.setPreferredScrollableViewportSize(new Dimension(500, 500));
+			table.setPreferredScrollableViewportSize(new Dimension(500, 1000));
 
 			JScrollPane scrollPane = new JScrollPane(table);
 
 			add(scrollPane);
 
-			JButton button = new JButton("Book it!");
+			JButton button = new JButton("Book");
 			button.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					int countSelected = myTableModel.countSelected();
