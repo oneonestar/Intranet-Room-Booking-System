@@ -237,7 +237,7 @@ class UserLogin extends JFrame {
 			setTitle("Available Timeslots");
 			setLayout(new GridLayout(10, 1));
 			this.currentUser = currentUser;
-			myTableModel = new MyTableModel(BookingController.getInstance().queueAvailableSlot(roomTypes, selectedDay));
+			myTableModel = new MyTableModel(BookingController.getInstance().queueAvailableTimeslot(roomTypes, selectedDay));
 			JLabel label_1_1 = new JLabel("Available timeslots");
 			label_1_2 = new JLabel(currentBookingStr);
 			label_1_3 = new JLabel(totalBookingStr);

@@ -14,7 +14,7 @@ import java.security.MessageDigest;
  * This class is a singleton class.
  */
 public class BookingController {
-	private static BookingController settings = null;
+	private static BookingController instance = null;
 	private List<Booking> bookingRecords;
 	private List<Room> roomRecords;
 	private List<User> userRecords;
@@ -25,17 +25,17 @@ public class BookingController {
 	 * @return the singleton instance of the BookingController.
 	 */
 	public static BookingController getInstance() {
-		if (settings  == null) {
-			settings = new BookingController();
+		if (instance  == null) {
+			instance = new BookingController();
 		}
-		return settings;
+		return instance;
 	}
 
 	/**
 	 * Constructor of the BookingController. Responsible for the initialization
 	 * of the private members and load the data into the program.
 	 */
-	public BookingController() {
+	private BookingController() {
 		roomRecords = new ArrayList<Room>();
 		userRecords = new ArrayList<User>();
 		bookingRecords = new ArrayList<Booking>();
@@ -49,7 +49,7 @@ public class BookingController {
 	/**
 	* Add a new booking into the database. Do not provide checking on data integrity.
 	* @param user user who is making this booking.
-	* @param slot the room and the timeslot to be booked.
+	* @param timeslot the room and the timeslot to be booked.
 	* @return true if nothing the adding is successful.
 	*/
 	public boolean addBooking(User user, Timeslot timeslot) {
@@ -61,13 +61,114 @@ public class BookingController {
 		return true;
 	}
 
+
 	/**
-	 * Load the room data from the file.
-	 * Schema: String roomNumber (primary key), String roomType, String roomLocation
-	 * @param filename the txt file which stored the data.
-	 * @return true if the loading is successful.
+	 * Authenticate the login request by comparing the staffID and password
+	 * and the entities in the database.
+	 * @param staffID the staffID should be unique.
+	 * @param password the password that matches the staffID.
+	 * @return true if the entity exist in database, otherwise return false.
 	 */
-	public boolean loadRoomData(String filename) {
+	public User authenticate(String staffID, String password) {
+		StringBuffer sb = new StringBuffer();
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			md.update(password.getBytes("UTF-8"));
+			byte[] mdbytes = md.digest();
+
+			for (int i = 0; i < mdbytes.length; i++) {
+				sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
+		String hashedPassword = sb.toString();
+		System.out.println(hashedPassword);
+		for (User user : userRecords) {
+			System.out.println(hashedPasswordRecords.get(user));
+			if (user.getStaffID().equals(staffID) && hashedPasswordRecords.get(user).equals(hashedPassword))
+				return user;
+		}
+		return null;
+	}
+
+	/**
+	* Return all the current booking records of the user.
+	* @param roomType a string that specified the room type. Should
+	*        be match a value returned by queueRoomTypes().
+	* @param date search the timeslots in which date.
+	* @return a list of slots which contains all the available timeslots in that date.
+	*/
+	public List<Timeslot> queueAvailableTimeslot(String roomType, Calendar date) {
+		List<Timeslot> availableSlot = new ArrayList<Timeslot>();
+		date.set(Calendar.HOUR_OF_DAY, 0);
+		date.set(Calendar.MINUTE, 0);
+		date.set(Calendar.SECOND, 0);
+		date.set(Calendar.MILLISECOND, 0);
+		Calendar start = (Calendar)date.clone();
+		Calendar end = (Calendar)date.clone();
+
+		start.set(Calendar.HOUR_OF_DAY, Settings.getInstance().dayStartTime.get(Calendar.HOUR_OF_DAY));
+		end.set(Calendar.HOUR_OF_DAY, Settings.getInstance().dayEndTime.get(Calendar.HOUR_OF_DAY));
+
+		//generate all timeslot for the rooms
+		for (Room room : roomRecords) {
+			if (room.getRoomType().equals(roomType)) {
+				Calendar tempCal = (Calendar)start.clone();
+				while (tempCal.compareTo(end) <= 0) {
+					if (tempCal.compareTo(Calendar.getInstance()) >= 0) {
+						availableSlot.add(new Timeslot(room, tempCal));
+						tempCal = (Calendar)tempCal.clone();
+					}
+					tempCal.add(Calendar.HOUR_OF_DAY, 1);
+				}
+			}
+		}
+		//remove the booked timeslot
+		for (Iterator<Timeslot> iterator = availableSlot.iterator(); iterator.hasNext(); ) {
+			Timeslot timeslot = iterator.next();
+			for (Booking booking : bookingRecords) {
+				if (booking.getTimeslot().compareTo(timeslot) == 0) {
+					iterator.remove();
+					break;
+				}
+			}
+		}
+		return availableSlot;
+	}
+
+	/**
+	 * Return all the current booking records of the user.
+	 * @param user which user booked the room.
+	 * @return a list of slots which contains the Room id, timeslot, etc.
+	 */
+	public List<Booking> queueCurrentBookings(User user) {
+		List<Booking> currentBookings = new ArrayList<Booking>();
+		for (Booking booking : bookingRecords) {
+			if (booking.getBookingUser().equals(user) && booking.getTimeslot().getDatetime().compareTo(Calendar.getInstance()) >= 0)
+				currentBookings.add(booking);
+		}
+		return currentBookings;
+	}
+	/**
+		 * Return all the type of room that that exist in the room list.
+		 * @return a set of room types (eg. "Computer Labs", "Classroom").
+		 */
+	public Set<String> queueRoomTypes() {
+		Set<String> roomSet = new HashSet<String>();
+		for (Room room : roomRecords) {
+			roomSet.add(room.getRoomType());
+		}
+		return roomSet;
+	}
+	/**
+	* Load the room data from the file.
+	* Schema: String roomNumber (primary key), String roomType, String roomLocation
+	* @param filename the txt file which stored the data.
+	* @return true if the loading is successful.
+	*/
+	private boolean loadRoomData(String filename) {
 		Path path = Paths.get("", filename);
 		Charset charset = Charset.forName("ISO-8859-1");
 		try {
@@ -88,7 +189,7 @@ public class BookingController {
 	 * @param filename the txt file which stored the data.
 	 * @return true if the loading is successful.
 	 */
-	public boolean loadUserData(String filename) {
+	private boolean loadUserData(String filename) {
 		Path path = Paths.get("", filename);
 		Charset charset = Charset.forName("ISO-8859-1");
 		try {
@@ -117,7 +218,7 @@ public class BookingController {
 	 * @param filename the txt file which stored the data.
 	 * @return true if the loading is successful.
 	 */
-	public boolean loadBookingData(String filename) {
+	private boolean loadBookingData(String filename) {
 		Path path = Paths.get("", filename);
 		Charset charset = Charset.forName("ISO-8859-1");
 		try {
@@ -153,62 +254,6 @@ public class BookingController {
 		}
 		return true;
 	}
-	/**
-	 * Authenticate the login request by comparing the staffID and password
-	 * and the entities in the database.
-	 * @param staffID the staffID should be unique.
-	 * @param password the password that matches the staffID.
-	 * @return true if the entity exist in database, otherwise return false.
-	 */
-	public User authenticate(String staffID, String password) {
-		StringBuffer sb = new StringBuffer();
-		try {
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			md.update(password.getBytes("UTF-8"));
-			byte[] mdbytes = md.digest();
-
-			for (int i = 0; i < mdbytes.length; i++) {
-				sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
-			}
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-
-		String hashedPassword = sb.toString();
-		System.out.println(hashedPassword);
-		for (User user : userRecords) {
-			System.out.println(hashedPasswordRecords.get(user));
-			if (user.getStaffID().equals(staffID) && hashedPasswordRecords.get(user).equals(hashedPassword))
-				return user;
-		}
-		return null;
-	}
-
-	/**
-	 * Return all the type of room that that exist in the room list.
-	 * @return a set of room types (eg. "Computer Labs", "Classroom").
-	 */
-	public Set<String> queueRoomTypes() {
-		Set<String> roomSet = new HashSet<String>();
-		for (Room room : roomRecords) {
-			roomSet.add(room.getRoomType());
-		}
-		return roomSet;
-	}
-
-	/**
-	 * Return all the current booking records of the user.
-	 * @param user which user booked the room.
-	 * @return a list of slots which contains the Room id, timeslot, etc.
-	 */
-	public List<Booking> queueCurrentBookings(User user) {
-		List<Booking> currentBookings = new ArrayList<Booking>();
-		for (Booking booking : bookingRecords) {
-			if (booking.getBookingUser().equals(user) && booking.getTimeslot().getDatetime().compareTo(Calendar.getInstance()) >= 0)
-				currentBookings.add(booking);
-		}
-		return currentBookings;
-	}
 
 	private Room searchRoom(String roomNumber) {
 		Room key = new Room(roomNumber, "", "");
@@ -221,50 +266,7 @@ public class BookingController {
 		int resultPos = Collections.binarySearch(userRecords, key);
 		return resultPos<0 ? null : userRecords.get(resultPos);
 	}
-	/**
-	 * Return all the current booking records of the user.
-	 * @param roomType a string that specified the room type. Should
-	 *        be match a value returned by queueRoomTypes().
-	 * @param date search the timeslots in which date.
-	 * @return a list of slots which contains all the available timeslots in that date.
-	 */
-	public List<Timeslot> queueAvailableSlot(String roomType, Calendar date) {
-		List<Timeslot> availableSlot = new ArrayList<Timeslot>();
-		date.set(Calendar.HOUR_OF_DAY, 0);
-		date.set(Calendar.MINUTE, 0);
-		date.set(Calendar.SECOND, 0);
-		date.set(Calendar.MILLISECOND, 0);
-		Calendar start = (Calendar)date.clone();
-		Calendar end = (Calendar)date.clone();
 
-		start.set(Calendar.HOUR_OF_DAY, Settings.getInstance().dayStartTime.get(Calendar.HOUR_OF_DAY));
-		end.set(Calendar.HOUR_OF_DAY, Settings.getInstance().dayEndTime.get(Calendar.HOUR_OF_DAY));
-
-		//generate all timeslot for the rooms
-		for (Room room : roomRecords) {
-			if (room.getRoomType().equals(roomType)) {
-				Calendar tempCal = (Calendar)start.clone();
-				while (tempCal.compareTo(end) <= 0) {
-					if (tempCal.compareTo(Calendar.getInstance()) >= 0) {
-						availableSlot.add(new Timeslot(room, tempCal));
-						tempCal = (Calendar)tempCal.clone();
-					}
-					tempCal.add(Calendar.HOUR_OF_DAY, 1);
-				}
-			}
-		}
-		//remove the booked timeslot
-		for (Iterator<Timeslot> iterator = availableSlot.iterator(); iterator.hasNext(); ) {
-			Timeslot timeslot = iterator.next();
-			for (Booking booking : bookingRecords) {
-				if (booking.compareTimeslot(timeslot)) {
-					iterator.remove();
-					break;
-				}
-			}
-		}
-		return availableSlot;
-	}
 }
 
 /**
@@ -272,18 +274,17 @@ public class BookingController {
  * count for each individual...).
  * This class is a singleton class.
  */
-//public final class Settings {
 class Settings {
-	private static Settings settings = null;
+	private static Settings instance = null;
 	/**
 	 * This function provide the access to the singleton object.
 	 * @return the singleton object of the BookingController.
 	 */
 	public static synchronized Settings getInstance() {
-		if (settings  == null) {
-			settings = new Settings();
+		if (instance  == null) {
+			instance = new Settings();
 		}
-		return settings;
+		return instance;
 	}
 
 	public final int maxBooking = 5;

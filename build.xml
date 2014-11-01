@@ -37,11 +37,12 @@
   <target name="doc">
     <mkdir dir="${doc.dir}"/>
     <!--  packagenames="src" -->
-    <javadoc destdir="${doc.dir}" packagenames="src" sourcepath="${src.dir}">
+    <javadoc destdir="${doc.dir}" packagenames="src" sourcepath="${src.dir}" >
       <!-- Define which files / directory should get included, we include all -->
       <fileset dir="${src.dir}">
         <include name="**"/>
       </fileset>
+      <classpath refid="classpath"/>
     </javadoc>
   </target>
 
