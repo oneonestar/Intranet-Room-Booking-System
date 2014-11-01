@@ -8,12 +8,18 @@ public class BookingTest extends TestCase
 {
 	public BookingTest()
 	{
-		BookingController.getInstance().
+		BookingController.getInstance().authenticate();
 	}
 	public void testGetBookingID()
 	{
-		Queue obj = a.createQueue();
-		assertTrue("createQueue() returned wrong type", obj instanceof Queue);
-		assertTrue("returned object isn't empty", obj.isEmpty());
+//		Queue obj = a.createQueue();
+//		assertTrue("createQueue() returned wrong type", obj instanceof Queue);
+//		assertTrue("returned object isn't empty", obj.isEmpty());
+	}
+	public void testBookingUser()
+	{
+	}
+	public void testTimeslot()
+	{
 	}
 }
