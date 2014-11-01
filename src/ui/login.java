@@ -5,7 +5,7 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileInputStream;
-import java.security.MessageDigest;
+
 
 import java.util.*;
 import java.util.List;
@@ -26,7 +26,7 @@ class UserLogin extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
 
-		u = new JLabel("Username");
+		u = new JLabel("StaffID");
 		p = new JLabel("Password");
 		uname = new JTextField(20);
 		pass = new JPasswordField(20);
@@ -44,21 +44,8 @@ class UserLogin extends JFrame {
 			public void actionPerformed(ActionEvent ae) {
 				String un = uname.getText();
 				String pa = new String(pass.getPassword());
-				StringBuffer sb = new StringBuffer();
 
-				try {
-					MessageDigest md = MessageDigest.getInstance("SHA-256");
-					md.update(pa.getBytes("UTF-8"));
-					byte[] mdbytes = md.digest();
-
-					for (int i = 0; i < mdbytes.length; i++) {
-						sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
-					}
-				} catch (Exception e) {
-					System.out.println(e);
-				}
-
-				User u = BookingController.getInstance().authenticate(un, sb.toString());
+				User u = BookingController.getInstance().authenticate(un, pa);
 				if (u != null) {
 					new MainFrame(u);
 					//reset login page for next user
@@ -104,7 +91,7 @@ class UserLogin extends JFrame {
 			addWindowFocusListener(this);
 			setTitle("Welcome");
 			setLayout(new GridLayout(10, 1));
-			JLabel label_1_1 = new JLabel("Hello, " + currentUser.firstName + " " + currentUser.lastName);
+			JLabel label_1_1 = new JLabel("Hello, " + currentUser.getFirstName() + " " + currentUser.getLastName());
 			label_1_2 = new JLabel(currentBookingStr);
 
 			add(label_1_1);
@@ -134,36 +121,36 @@ class UserLogin extends JFrame {
 			//setDefaultCloseOperation(EXIT_ON_CLOSE);
 		}
 		class MyTableModel extends AbstractTableModel {
-			private List<BookingSlot> slots;
+			private List<Booking> bookings;
 			private String[] columnNames = {"BookingID",
-			                                "UserName",
-			                                "RoomID",
+			                                "StaffID",
+			                                "Room Number",
 			                                "Booking Time"
 			                               };
 			public MyTableModel() {
-				this.slots = BookingController.getInstance().queueCurrentBookings(currentUser);
+				this.bookings = BookingController.getInstance().queueCurrentBookings(currentUser);
 			}
 			public void updateModel() {
-				this.slots = BookingController.getInstance().queueCurrentBookings(currentUser);
+				this.bookings = BookingController.getInstance().queueCurrentBookings(currentUser);
 			}
 			public int getColumnCount() {
 				return columnNames.length;
 			}
 			public int getRowCount() {
-				return slots.size();
+				return bookings.size();
 			}
 			public String getColumnName(int col) {
 				return columnNames[col];
 			}
 			public Object getValueAt(int row, int col) {
 				if (col == 0)
-					return slots.get(row).bookingID;
+					return bookings.get(row).getBookingID();
 				if (col == 1)
-					return slots.get(row).user.username;
+					return bookings.get(row).getBookingUser().getStaffID();
 				if (col == 2)
-					return slots.get(row).room.roomID;
+					return bookings.get(row).getTimeslot().getRoom().getRoomNumber();
 				if (col == 3)
-					return slots.get(row).time.getTime().toLocaleString();
+					return bookings.get(row).getTimeslot().getDatetime().getTime().toLocaleString();
 				return null;
 			}
 		}
@@ -171,7 +158,7 @@ class UserLogin extends JFrame {
 	class BookingFrame extends JDialog  {
 		JDatePickerImpl datePicker;
 		User currentUser;
-        JComboBox comboList;
+		JComboBox comboList;
 
 		public BookingFrame(User currentUser) {
 			this.currentUser = currentUser;
@@ -189,7 +176,7 @@ class UserLogin extends JFrame {
 			for (String s : BookingController.getInstance().queueRoomTypes()) {
 				comboList.addItem(s);
 			}
-            add(comboList);
+			add(comboList);
 
 			JButton button = new JButton("Search");
 			button.addActionListener(new ActionListener() {
@@ -295,15 +282,15 @@ class UserLogin extends JFrame {
 			setVisible(true);
 		}
 		class MyTableModel extends AbstractTableModel {
-			private List<BookingSlot> slots;
+			private List<Timeslot> slots;
 			private List<Boolean> selected;
 			private String[] columnNames = {"BookingID",
-			                                "UserName",
-			                                "RoomID",
+			                                "staffID",
+			                                "Room Number",
 			                                "Booking Time",
 			                                "Selected"
 			                               };
-			public MyTableModel(List<BookingSlot> slots) {
+			public MyTableModel(List<Timeslot> slots) {
 				this.slots = slots;
 				selected = new ArrayList<Boolean>(Collections.nCopies(slots.size(), false));
 			}
@@ -322,9 +309,9 @@ class UserLogin extends JFrame {
 				if (col == 1)
 					return "";
 				if (col == 2)
-					return slots.get(row).room.roomID;
+					return slots.get(row).getRoom().getRoomNumber();
 				if (col == 3)
-					return slots.get(row).time.getTime().toLocaleString();
+					return slots.get(row).getDatetime().getTime().toLocaleString();
 				if (col == 4)
 					return selected.get(row);
 				return null;
@@ -362,9 +349,6 @@ class UserLogin extends JFrame {
 		}
 	}
 	public static void main(String args[]) {
-		BookingController.getInstance().loadRoomData("rooms.txt");
-		BookingController.getInstance().loadUserData("users.txt");
-		BookingController.getInstance().loadBookingData("booking.txt");
 
 		System.out.println("tips: password are sha-256 hashed");
 		System.out.println("user: abc001");

@@ -28,7 +28,7 @@
   <!-- Compiles the java code (including the usage of library for JUnit -->
   <target name="compile" depends="clean">
     <mkdir dir="${build.dir}"/>
-    <javac destdir="${build.dir}" srcdir="${src.dir}">
+    <javac destdir="${build.dir}" srcdir="${src.dir}" includeantruntime="false">
       <classpath refid="classpath"/>
     </javac>
   </target>

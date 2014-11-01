@@ -15,9 +15,9 @@ import java.security.MessageDigest;
  */
 public class BookingController {
 	private static BookingController settings = null;
-	private List<Booking> bookingRecords;
-	private List<Room> roomRecords;
-	private List<User> userRecords;
+	private List<Timeslot> bookingRecords;
+	private List<Room> rooms;
+	private List<User> users;
 	private Map<User, String> hashedPasswordRecords;
 
 	/**
@@ -32,21 +32,6 @@ public class BookingController {
 	}
 
 	/**
-	 * Constructor of the BookingController. Responsible for the initialization
-	 * of the private members and load the data into the program.
-	 */
-	public BookingController() {
-		roomRecords = new ArrayList<Room>();
-		userRecords = new ArrayList<User>();
-		bookingRecords = new ArrayList<Booking>();
-		hashedPasswordRecords = new HashMap<User, String>();
-		//The order of loading is important. There are dependency between the data.
-		loadRoomData(Settings.getInstance().roomRecordFile);
-		loadUserData(Settings.getInstance().userRecordFile);
-		loadBookingData(Settings.getInstance().bookingRecordFile);
-	}
-
-	/**
 	* Add a new booking into the database. Do not provide checking on data integrity.
 	* @param user user who is making this booking.
 	* @param slot the room and the timeslot to be booked.
@@ -55,12 +40,24 @@ public class BookingController {
 	public boolean addBooking(User user, Timeslot timeslot) {
 		if (user == null || timeslot == null)
 			return false;
-		String bookingID = Integer.toString(bookingRecords.size());
-		Booking newBooking = new Booking(bookingID, user, timeslot);
+		Booking newBooking = new Booking(user, timeslot, Integer.toString(bookingRecords.size()));
 		bookingRecords.add(newBooking);
 		return true;
 	}
-
+	/**
+	 * Constructor of the BookingController. Responsible for the initialization
+	 * of the private members and load the data into the program.
+	 */
+	public BookingController() {
+		rooms = new ArrayList<Room>();
+		users = new ArrayList<User>();
+		bookingRecords = new ArrayList<Timeslot>();
+		hashedPasswordRecords = new HashMap<User, String>();
+		//The order of loading is important. There are dependency between the data.
+		loadRoomData(Settings.getInstance().roomRecordFile);
+		loadUserData(Settings.getInstance().userRecordFile);
+		loadBookingData(Settings.getInstance().bookingRecordFile);
+	}
 	/**
 	 * Load the room data from the file.
 	 * Schema: String roomNumber (primary key), String roomType, String roomLocation
@@ -72,14 +69,14 @@ public class BookingController {
 		Charset charset = Charset.forName("ISO-8859-1");
 		try {
 			List<String> lines = Files.readAllLines(path, charset);
+
 			for (String line : lines) {
-				String[] tokens = line.split(";");
-				roomRecords.add(new Room(tokens[0], tokens[1], tokens[2]));
+				StringTokenizer st = new StringTokenizer(line, ";");
+				rooms.add(new Room(st.nextToken(), st.nextToken(), st.nextToken()));
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			System.out.println(e);
 		}
-		Collections.sort(roomRecords);
 		return true;
 	}
 	/**
@@ -95,19 +92,18 @@ public class BookingController {
 			List<String> lines = Files.readAllLines(path, charset);
 
 			for (String line : lines) {
-				String[] tokens = line.split(";");
-				String staffID = tokens[0];
-				String firstName = tokens[1];
-				String lastName = tokens[2];
-				String hashedPassword = tokens[3];
+				StringTokenizer st = new StringTokenizer(line, ";");
+				String staffID = st.nextToken();
+				String firstName = st.nextToken();
+				String lastName = st.nextToken();
+				String hashedPassword = st.nextToken();
 				User user = new User(staffID, firstName, lastName);
-				userRecords.add(user);
 				hashedPasswordRecords.put(user, hashedPassword);
+				users.add(user);
 			}
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-		Collections.sort(userRecords);
 		return true;
 	}
 	/**
@@ -124,29 +120,30 @@ public class BookingController {
 			List<String> lines = Files.readAllLines(path, charset);
 
 			for (String line : lines) {
-				String[] tokens = line.split(";");
+				StringTokenizer st = new StringTokenizer(line, ";");
 
-				String bookingID = tokens[0];
-				String staffID = tokens[1];
-				String roomNumber = tokens[2];
-				String timeString = tokens[3];
+				String bookingID = st.nextToken();
+				String staffID = st.nextToken();
+				String room = st.nextToken();
+				String timeString = st.nextToken();
+
 
 				Calendar calendar = Calendar.getInstance();
 				SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", new  Locale("en", "US"));
 				try {
 					Date date = sdf.parse(timeString);
 					calendar.setTime(date);
+					calendar.set(Calendar.MILLISECOND, 0);
 				} catch (Exception e) {
-					System.out.println(e);
 				}
-				Room room = searchRoom(roomNumber);
+				Room room = searchRoom(room);
 				User user = searchUser(staffID);
 				if (room == null || user == null) {
 					System.out.print("Database corrupted!");
 					return false;
 				}
 				Timeslot timeslot = new Timeslot(room, calendar);
-				bookingRecords.add(new Booking(bookingID, user, timeslot));
+				bookingRecords.add(new Booking(user, timeslot, Integer.toString(bookingRecords.size())));
 			}
 		} catch (IOException e) {
 			System.out.println(e);
@@ -176,7 +173,7 @@ public class BookingController {
 
 		String hashedPassword = sb.toString();
 		System.out.println(hashedPassword);
-		for (User user : userRecords) {
+		for (User user : users) {
 			System.out.println(hashedPasswordRecords.get(user));
 			if (user.getStaffID().equals(staffID) && hashedPasswordRecords.get(user).equals(hashedPassword))
 				return user;
@@ -185,12 +182,12 @@ public class BookingController {
 	}
 
 	/**
-	 * Return all the type of room that that exist in the room list.
+	 * Return all the type of rooms that that exist in the room list.
 	 * @return a set of room types (eg. "Computer Labs", "Classroom").
 	 */
 	public Set<String> queueRoomTypes() {
-		Set<String> roomSet = new HashSet<String>();
-		for (Room room : roomRecords) {
+		Set<String> roomSet = new HashSet<>();
+		for (Room room : rooms) {
 			roomSet.add(room.getRoomType());
 		}
 		return roomSet;
@@ -198,28 +195,32 @@ public class BookingController {
 
 	/**
 	 * Return all the current booking records of the user.
-	 * @param user which user booked the room.
+	 * @param user which user booked the rooms.
 	 * @return a list of slots which contains the Room id, timeslot, etc.
 	 */
 	public List<Booking> queueCurrentBookings(User user) {
 		List<Booking> currentBookings = new ArrayList<Booking>();
 		for (Booking booking : bookingRecords) {
-			if (booking.getBookingUser().equals(user) && booking.getTimeslot().getDatetime().compareTo(Calendar.getInstance()) >= 0)
-				currentBookings.add(booking);
+			if (booking.user.equals(user) && booking.time.compareTo(Calendar.getInstance()) >= 0)
+				currentBookings.add(slot);
 		}
 		return currentBookings;
 	}
 
 	private Room searchRoom(String roomNumber) {
-		Room key = new Room(roomNumber, "", "");
-		int resultPos = Collections.binarySearch(roomRecords, key);
-		return resultPos<0 ? null : roomRecords.get(resultPos);
+		for (Room room : rooms) {
+			if (room.getRoomNumber().equals(roomNumber))
+				return room;
+		}
+		return null;
 	}
 
 	private User searchUser(String staffID) {
-		User key = new User(staffID, "", "");
-		int resultPos = Collections.binarySearch(userRecords, key);
-		return resultPos<0 ? null : userRecords.get(resultPos);
+		for (User user : users) {
+			if (user.getStaffID().equals(staffID))
+				return user;
+		}
+		return null;
 	}
 	/**
 	 * Return all the current booking records of the user.
@@ -241,7 +242,7 @@ public class BookingController {
 		end.set(Calendar.HOUR_OF_DAY, Settings.getInstance().dayEndTime.get(Calendar.HOUR_OF_DAY));
 
 		//generate all timeslot for the rooms
-		for (Room room : roomRecords) {
+		for (Room room : rooms) {
 			if (room.getRoomType().equals(roomType)) {
 				Calendar tempCal = (Calendar)start.clone();
 				while (tempCal.compareTo(end) <= 0) {
@@ -255,9 +256,9 @@ public class BookingController {
 		}
 		//remove the booked timeslot
 		for (Iterator<Timeslot> iterator = availableSlot.iterator(); iterator.hasNext(); ) {
-			Timeslot timeslot = iterator.next();
-			for (Booking booking : bookingRecords) {
-				if (booking.compareTimeslot(timeslot)) {
+			Timeslot slot = iterator.next();
+			for (Timeslot bookedslot : bookingRecords) {
+				if (bookedslot.room.getRoomNumber().equals(slot.room.getRoomNumber()) && bookedslot.time.compareTo(slot.time) == 0) {
 					iterator.remove();
 					break;
 				}
@@ -287,12 +288,12 @@ class Settings {
 	}
 
 	public final int maxBooking = 5;
-	public final String roomRecordFile = "room.txt";
-	public final String userRecordFile = "user.txt";
+	public final String roomRecordFile = "rooms.txt";
+	public final String userRecordFile = "users.txt";
 	public final String bookingRecordFile = "booking.txt";
 	public final Calendar dayStartTime;
 	public final Calendar dayEndTime;
-
+	
 	/**
 	 * Init the complex data type.
 	 */
