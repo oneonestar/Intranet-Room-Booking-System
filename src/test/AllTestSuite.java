@@ -1,4 +1,4 @@
-package IRBS.test;
+package IRBS;
 
 import IRBS.*;
 import junit.framework.Test;

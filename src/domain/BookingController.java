@@ -57,6 +57,8 @@ public class BookingController {
 	public boolean addBooking(User user, Timeslot timeslot) {
 		if (user == null || timeslot == null)
 			return false;
+		if ( queryCurrentBookings(user).size() >= Settings.getInstance().maxBooking)
+			return false;
 		String bookingID = Integer.toString(bookingRecords.size());
 		Booking newBooking = new Booking(bookingID, user, timeslot);
 		bookingRecords.add(newBooking);
@@ -86,9 +88,7 @@ public class BookingController {
 		}
 
 		String hashedPassword = sb.toString();
-		System.out.println(hashedPassword);
 		for (User user : userRecords) {
-			System.out.println(hashedPasswordRecords.get(user));
 			if (user.getStaffID().equals(staffID) && hashedPasswordRecords.get(user).equals(hashedPassword))
 				return user;
 		}
