@@ -1,3 +1,5 @@
+package IRBS;
+
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.io.IOException;
@@ -96,11 +98,11 @@ public class BookingController {
 	/**
 	* Return all the current booking records of the user.
 	* @param roomType a string that specified the room type. Should
-	*        be match a value returned by queueRoomTypes().
+	*        be match a value returned by queryRoomTypes().
 	* @param date search the timeslots in which date.
 	* @return a list of slots which contains all the available timeslots in that date.
 	*/
-	public List<Timeslot> queueAvailableTimeslot(String roomType, Calendar date) {
+	public List<Timeslot> queryAvailableTimeslot(String roomType, Calendar date) {
 		List<Timeslot> availableSlot = new ArrayList<Timeslot>();
 		date.set(Calendar.HOUR_OF_DAY, 0);
 		date.set(Calendar.MINUTE, 0);
@@ -143,7 +145,7 @@ public class BookingController {
 	 * @param user which user booked the room.
 	 * @return a list of slots which contains the Room id, timeslot, etc.
 	 */
-	public List<Booking> queueCurrentBookings(User user) {
+	public List<Booking> queryCurrentBookings(User user) {
 		List<Booking> currentBookings = new ArrayList<Booking>();
 		for (Booking booking : bookingRecords) {
 			if (booking.getBookingUser().equals(user) && booking.getTimeslot().getDatetime().compareTo(Calendar.getInstance()) >= 0)
@@ -155,7 +157,7 @@ public class BookingController {
 		 * Return all the type of room that that exist in the room list.
 		 * @return a set of room types (eg. "Computer Labs", "Classroom").
 		 */
-	public Set<String> queueRoomTypes() {
+	public Set<String> queryRoomTypes() {
 		Set<String> roomSet = new HashSet<String>();
 		for (Room room : roomRecords) {
 			roomSet.add(room.getRoomType());

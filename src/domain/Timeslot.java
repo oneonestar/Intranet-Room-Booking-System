@@ -1,8 +1,10 @@
+package IRBS;
+
 import java.util.Calendar;
 /**
  *
  */
-class Timeslot implements Comparable<Timeslot> {
+public class Timeslot implements Comparable<Timeslot> {
 	private Room room;
 	private Calendar datetime;
 
@@ -33,14 +35,14 @@ class Timeslot implements Comparable<Timeslot> {
 	}
 	/**
 	 * This function is responsible for returning the room to the caller.
-	 * @return the corresponding room in the timeslot record. 
+	 * @return the corresponding room in the timeslot record.
 	 */
 	public Room getRoom() {
 		return room;
 	}
 	/**
 	 * This function is responsible for returning the datetime to the caller.
-	 * The return 
+	 * The return
 	 * @return the datetime room in the timeslot record.
 	 */
 	public Calendar getDatetime() {

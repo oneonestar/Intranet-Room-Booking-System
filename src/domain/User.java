@@ -1,3 +1,4 @@
+package IRBS;
 /**
  * Contail the information of a user except the password.
  */

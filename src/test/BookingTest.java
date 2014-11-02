@@ -1,25 +1,27 @@
+package IRBS;
+
+import IRBS.*;
 import junit.framework.TestCase;
+import java.util.Calendar;
 
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-
-public class BookingTest extends TestCase
-{
-	public BookingTest()
-	{
-		BookingController.getInstance().authenticate();
+public class BookingTest extends TestCase {
+	Booking booking;
+	Room room;
+	User user;
+	Timeslot timeslot;
+	public BookingTest() {
+		user = new User("abc001", "John", "Chan");
+		room = new Room("PQ601", "Computer Lab", "PQ Floor6");
+		timeslot = new Timeslot(room, Calendar.getInstance());
+		booking = new Booking("1", user, timeslot);
 	}
-	public void testGetBookingID()
-	{
-//		Queue obj = a.createQueue();
-//		assertTrue("createQueue() returned wrong type", obj instanceof Queue);
-//		assertTrue("returned object isn't empty", obj.isEmpty());
+	public void testGetBookingID() {
+		assertEquals(booking.getBookingID(), "1");
 	}
-	public void testBookingUser()
-	{
+	public void testBookingUser() {
+		assertEquals(booking.getBookingUser(), user);
 	}
-	public void testTimeslot()
-	{
+	public void testGetTimeslot() {
+		assertEquals(booking.getTimeslot(), timeslot);
 	}
 }

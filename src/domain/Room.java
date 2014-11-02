@@ -1,3 +1,5 @@
+package IRBS;
+
 public class Room implements Comparable<Room> {
 	private String roomNumber;
 	private String roomType;

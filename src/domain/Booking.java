@@ -1,3 +1,5 @@
+package IRBS;
+
 public class Booking {
 	private String bookingID;
 	private User user;

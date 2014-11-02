@@ -28,9 +28,25 @@
   <!-- Compiles the java code (including the usage of library for JUnit -->
   <target name="compile" depends="clean">
     <mkdir dir="${build.dir}"/>
-    <javac destdir="${build.dir}" srcdir="${src.dir}" includeantruntime="false">
+	<javac destdir="${build.dir}" srcdir="${src.dir}" includeantruntime="false">
       <classpath refid="classpath"/>
     </javac>
+    <copy todir="${build.dir}">
+      <fileset dir="${db.dir}"/>
+      <globmapper from="*" to="*"/>
+    </copy>
+  </target>
+
+  <!-- Compiles the java code (including the usage of library for JUnit -->
+  <target name="compileDebug" depends="clean">
+    <mkdir dir="${build.dir}"/>
+	<javac destdir="${build.dir}" srcdir="${src.dir}" includeantruntime="false" debug="on">
+      <classpath refid="classpath"/>
+    </javac>
+    <copy todir="${build.dir}">
+      <fileset dir="${db.dir}"/>
+      <globmapper from="*" to="*"/>
+    </copy>
   </target>
 
   <!-- Creates Javadoc -->
@@ -68,13 +84,14 @@
 
   <!-- Run the JUnit Tests --> 
   <!-- Output format could be xml or plain--> 
-  <target name="test" depends="compile"> 
+  <target name="test" depends="compileDebug"> 
     <mkdir dir="${test.report.dir}"/>
     <junit printsummary="on" fork="true" haltonfailure="true"> 
+		<jvmarg value="-Duser.dir=${build.dir}"/>
       <classpath refid="classpath"/>
-        <test name="test.AllTestSuite" haltonfailure="no" todir="${test.report.dir}">
-          <formatter type="plain"/>
-        </test>
+      <test name="IRBS.test.AllTestSuite" haltonfailure="no" todir="${test.report.dir}">
+        <formatter type="plain"/>
+      </test>
     </junit> 
   </target> 
 

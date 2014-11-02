@@ -15,6 +15,8 @@ import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilDateModel;
 
 
+import IRBS.*;
+
 class UserLogin extends JFrame {
 	JButton login;
 	JTextField uname;
@@ -81,7 +83,7 @@ class UserLogin extends JFrame {
 		public void windowGainedFocus(WindowEvent e) {
 			myTableModel.updateModel();
 			myTableModel.fireTableDataChanged();
-			int countBooked = BookingController.getInstance().queueCurrentBookings(MainFrame.this.currentUser).size();
+			int countBooked = BookingController.getInstance().queryCurrentBookings(MainFrame.this.currentUser).size();
 			label_1_2.setText(currentBookingStr + countBooked);
 		}
 		public void windowLostFocus(WindowEvent e) {}
@@ -128,10 +130,10 @@ class UserLogin extends JFrame {
 			                                "Booking Time"
 			                               };
 			public MyTableModel() {
-				this.bookings = BookingController.getInstance().queueCurrentBookings(currentUser);
+				this.bookings = BookingController.getInstance().queryCurrentBookings(currentUser);
 			}
 			public void updateModel() {
-				this.bookings = BookingController.getInstance().queueCurrentBookings(currentUser);
+				this.bookings = BookingController.getInstance().queryCurrentBookings(currentUser);
 			}
 			public int getColumnCount() {
 				return columnNames.length;
@@ -173,7 +175,7 @@ class UserLogin extends JFrame {
 			add(datePicker);
 
 			comboList = new JComboBox();
-			for (String s : BookingController.getInstance().queueRoomTypes()) {
+			for (String s : BookingController.getInstance().queryRoomTypes()) {
 				comboList.addItem(s);
 			}
 			add(comboList);
@@ -228,7 +230,7 @@ class UserLogin extends JFrame {
 
 		private void updateBooking() {
 			int countSelected = myTableModel.countSelected();
-			int countBooked = BookingController.getInstance().queueCurrentBookings(currentUser).size();
+			int countBooked = BookingController.getInstance().queryCurrentBookings(currentUser).size();
 
 			label_1_2.setText(currentBookingStr + countSelected);
 			label_1_3.setText(totalBookingStr + (countSelected + countBooked));
@@ -237,7 +239,7 @@ class UserLogin extends JFrame {
 			setTitle("Available Timeslots");
 			setLayout(new GridLayout(10, 1));
 			this.currentUser = currentUser;
-			myTableModel = new MyTableModel(BookingController.getInstance().queueAvailableTimeslot(roomTypes, selectedDay));
+			myTableModel = new MyTableModel(BookingController.getInstance().queryAvailableTimeslot(roomTypes, selectedDay));
 			JLabel label_1_1 = new JLabel("Available timeslots");
 			label_1_2 = new JLabel(currentBookingStr);
 			label_1_3 = new JLabel(totalBookingStr);
@@ -257,8 +259,8 @@ class UserLogin extends JFrame {
 			button.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					int countSelected = myTableModel.countSelected();
-					int countBooked = BookingController.getInstance().queueCurrentBookings(BookingFrameStep2.this.currentUser).size();
-					if (countSelected + countBooked > Settings.getInstance().maxBooking) {
+					int countBooked = BookingController.getInstance().queryCurrentBookings(BookingFrameStep2.this.currentUser).size();
+					if (countSelected + countBooked > 5) {
 						JOptionPane.showMessageDialog(null,
 						                              "Maximum Booking Count is 5!",
 						                              "Error",
