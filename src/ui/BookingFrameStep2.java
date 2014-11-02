@@ -10,6 +10,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import IRBS.*;
 
@@ -79,12 +80,9 @@ class BookingFrameStep2 extends JDialog {
 	class MyTableModel extends AbstractTableModel {
 		private List<Timeslot> slots;
 		private List<Boolean> selected;
-		private String[] columnNames = {"BookingID",
-		                                "staffID",
-		                                "Room Number",
+		private String[] columnNames = {"Room Number",
 		                                "Booking Time",
-		                                "Selected"
-		                               };
+		                                "Select"};
 		public MyTableModel(List<Timeslot> slots) {
 			this.slots = slots;
 			selected = new ArrayList<Boolean>(Collections.nCopies(slots.size(), false));
@@ -100,20 +98,19 @@ class BookingFrameStep2 extends JDialog {
 		}
 		public Object getValueAt(int row, int col) {
 			if (col == 0)
-				return "";
-			if (col == 1)
-				return "";
-			if (col == 2)
 				return slots.get(row).getRoom().getRoomNumber();
-			if (col == 3)
-				return slots.get(row).getDatetime().getTime().toLocaleString();
-			if (col == 4)
+			if (col == 1)
+			{
+				SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy hh:mm aaa");
+				return sdf.format(slots.get(row).getDatetime().getTime());
+			}
+			if (col == 2)
 				return selected.get(row);
 			return null;
 		}
 
 		public boolean isCellEditable(int row, int col) {
-			if (col == 4) {
+			if (col == 2) {
 				return true;
 			}
 			return false;

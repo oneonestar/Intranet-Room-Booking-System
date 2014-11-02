@@ -16,7 +16,7 @@ import IRBS.*;
 public class BookingFrame extends JDialog {
 	JDatePickerImpl datePicker;
 	User currentUser;
-	JComboBox comboList;
+	JComboBox<String> comboList;
 
 	public BookingFrame(User currentUser) {
 		this.currentUser = currentUser;
@@ -30,7 +30,7 @@ public class BookingFrame extends JDialog {
 		datePicker.setBounds(220, 350, 120, 30);
 		add(datePicker);
 
-		comboList = new JComboBox();
+		comboList = new JComboBox<String>();
 		for (String s : BookingController.getInstance().queryRoomTypes()) {
 			comboList.addItem(s);
 		}

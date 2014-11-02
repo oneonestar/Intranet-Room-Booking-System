@@ -66,10 +66,7 @@ public class Login extends JFrame {
 		setLocationRelativeTo(null);
 	}
 	public static void main(String args[]) {
-
-		System.out.println("tips: password are sha-256 hashed");
-		System.out.println("user: abc001");
-		System.out.println("password: cba001");
+		System.out.println("**Please refer to README file for testing**");
 		new Login();
 	}
 }

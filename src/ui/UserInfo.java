@@ -10,6 +10,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import IRBS.*;
 
@@ -93,7 +94,10 @@ public class UserInfo extends JDialog implements WindowFocusListener {
 			if (col == 2)
 				return bookings.get(row).getTimeslot().getRoom().getRoomNumber();
 			if (col == 3)
-				return bookings.get(row).getTimeslot().getDatetime().getTime().toLocaleString();
+			{
+				SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy hh:mm aaa");
+				return sdf.format(bookings.get(row).getTimeslot().getDatetime().getTime());
+			}
 			return null;
 		}
 	}

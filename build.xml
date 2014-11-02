@@ -41,6 +41,8 @@
   <target name="compileDebug" depends="clean">
     <mkdir dir="${build.dir}"/>
 	<javac destdir="${build.dir}" srcdir="${src.dir}" includeantruntime="false" debug="on">
+      <compilerarg value="-Xlint:deprecation"/>
+      <compilerarg value="-Xlint:unchecked"/>
       <classpath refid="classpath"/>
     </javac>
     <copy todir="${build.dir}">

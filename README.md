@@ -26,10 +26,13 @@ The database files included some entries for testing purpose, you may login the 
  - User: abc003 Password:cba003
 
 #Additional information
- * The system do not support file saving function. Closing the program compeletely will discard all the booking records made during the process.
+ * The system does no support file saving function. Closing the program compeletely will discard all the booking records made during the process.
+ * The valid booking date is from now to 1 month later.
+ * The current booking count will only count the booking after current date&time, the bookings that expired will not be treated as a current booking.
  * The password of the users are in SHA-256 hashed format.
+ * Global constants are stored in the class Settings in ClassController, including database filename, room opening hour and maximun booking limit for each person.
  * UML is designed by StarUML2.
  * Use-cases are using Lyx as the document processer.
 
 #Dependency
-The system is using JUnit 3.8.1 for unit testing. JDatePicker for selecting a date in UI.
+The system is using JUnit 3.8.1 for unit testing. JDatePicker 1.3.2 for selecting a date in UI.
